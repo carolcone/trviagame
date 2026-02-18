@@ -416,12 +416,12 @@
                 <label>Mode</label>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="mode" value="trivia" checked>
+                        <input type="radio" name="mode" value="trivia" checked onclick="toggleMode()">
                         <span class="radio-label">🎯 Trivia Questions</span>
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="mode" value="gettoknowyou">
-                        <span class="radio-label">💭 Get to Know You</span>
+                        <input type="radio" name="mode" value="conversation" onclick="toggleMode()">
+                        <span class="radio-label">💬 Conversation Starters</span>
                     </label>
                 </div>
             </div>
@@ -450,6 +450,7 @@
             <div class="form-group" id="difficulty-group">
                 <label>Difficulty</label>
                 <select id="difficulty">
+                    <option value="mixed">🎲 Mixed (All Levels)</option>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
@@ -457,11 +458,12 @@
             </div>
 
             <div class="form-group" id="depth-group" style="display: none;">
-                <label>Question Depth</label>
+                <label>Question Style</label>
                 <select id="depth">
                     <option value="mixed">🎲 Mixed (Light & Deep)</option>
                     <option value="light">☀️ Light & Fun</option>
                     <option value="deep">🌙 Deep & Meaningful</option>
+                    <option value="spicy">🌶️ Spicy & Flirty</option>
                 </select>
             </div>
 
@@ -485,29 +487,59 @@
     </div>
 
     <script>
-        let questions = [];
-        let currentQuestion = 0;
-        let score = 0;
-
-        // Toggle between trivia and get to know you mode
-        document.addEventListener('DOMContentLoaded', function() {
-            const modeRadios = document.querySelectorAll('input[name="mode"]');
+        // Define toggleMode at the TOP so onclick can find it
+        window.toggleMode = function() {
+            alert('toggleMode called!'); // DEBUG
+            
+            const selectedMode = document.querySelector('input[name="mode"]:checked');
+            if (!selectedMode) {
+                console.log('No mode selected!');
+                alert('ERROR: No mode selected');
+                return;
+            }
+            
+            const modeValue = selectedMode.value;
+            alert('Mode value: ' + modeValue); // DEBUG
+            
             const categoryGroup = document.getElementById('category-group');
             const difficultyGroup = document.getElementById('difficulty-group');
             const depthGroup = document.getElementById('depth-group');
             
+            console.log('toggleMode called, selected:', modeValue);
+            console.log('Elements found:', {
+                categoryGroup: !!categoryGroup,
+                difficultyGroup: !!difficultyGroup,
+                depthGroup: !!depthGroup
+            });
+            
+            if (modeValue === 'conversation') {
+                if (categoryGroup) categoryGroup.style.cssText = 'display: none !important; margin-bottom: 0 !important';
+                if (difficultyGroup) difficultyGroup.style.cssText = 'display: none !important; margin-bottom: 0 !important';
+                if (depthGroup) depthGroup.style.cssText = 'display: block !important; margin-bottom: 24px';
+                console.log('✅ Set to CONVERSATION mode - category/difficulty HIDDEN, depth SHOWN');
+                alert('Should show Question Style now!'); // DEBUG
+            } else {
+                if (categoryGroup) categoryGroup.style.cssText = 'display: block !important; margin-bottom: 24px';
+                if (difficultyGroup) difficultyGroup.style.cssText = 'display: block !important; margin-bottom: 24px';
+                if (depthGroup) depthGroup.style.cssText = 'display: none !important; margin-bottom: 0 !important';
+                console.log('✅ Set to TRIVIA mode - category/difficulty SHOWN, depth HIDDEN');
+                alert('Should show Category and Difficulty now!'); // DEBUG
+            }
+        };
+
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+
+        // Toggle between trivia and conversation mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial state
+            window.toggleMode();
+            
+            // Add listeners as backup
+            const modeRadios = document.querySelectorAll('input[name="mode"]');
             modeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'gettoknowyou') {
-                        categoryGroup.style.display = 'none';
-                        difficultyGroup.style.display = 'none';
-                        depthGroup.style.display = 'block';
-                    } else {
-                        categoryGroup.style.display = 'block';
-                        difficultyGroup.style.display = 'block';
-                        depthGroup.style.display = 'none';
-                    }
-                });
+                radio.addEventListener('change', window.toggleMode);
             });
         });
 
@@ -542,14 +574,14 @@
             try {
                 await new Promise(resolve => setTimeout(resolve, 2200)); // Wait for animation
                 
-                // Get to Know You mode
-                if (mode === 'gettoknowyou') {
-                    console.log('Loading Get to Know You questions...');
-                    questions = getToKnowYouQuestions(depth);
+                // Conversation Starters mode
+                if (mode === 'conversation') {
+                    console.log('Loading Conversation Starter questions...');
+                    questions = getConversationQuestions(depth);
                     console.log('Got questions:', questions.length);
                     currentQuestion = 0;
-                    score = 0; // Not really scoring but keeping structure
-                    displayGetToKnowYouQuestion();
+                    score = 0;
+                    displayConversationQuestion();
                     return;
                 }
                 
@@ -564,9 +596,20 @@
                     return;
                 }
 
-                // Try to fetch from API with CORS proxy
+                // API categories - fetch from Open Trivia DB
                 console.log('Fetching questions from API...');
-                const apiUrl = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
+                
+                // Handle mixed difficulty
+                let apiDifficulty = difficulty;
+                if (difficulty === 'mixed') {
+                    // For mixed, we'll fetch easy questions (API doesn't support mixed natively)
+                    // User won't know and it provides variety
+                    apiDifficulty = '';
+                } else {
+                    apiDifficulty = `&difficulty=${difficulty}`;
+                }
+                
+                const apiUrl = `https://opentdb.com/api.php?amount=10&category=${category}${apiDifficulty}&type=multiple`;
                 console.log('API URL:', apiUrl);
                 
                 const response = await fetch(apiUrl);
@@ -594,14 +637,230 @@
                     <div class="error">
                         <strong>Failed to load questions</strong><br>
                         Error: ${error.message}<br><br>
-                        ${category !== 'holiday' && mode !== 'gettoknowyou' ? 'The trivia API might be blocked by your browser or network.<br>Try the Holiday category or Get to Know You mode instead!' : 'Please try again.'}
+                        The trivia API might be blocked by your browser or network.<br>
+                        Try the <strong>Holiday</strong> category or <strong>Conversation Starters</strong> mode instead - they work offline!
                     </div>
                     <button onclick="resetQuiz()">Back to Setup</button>
                 `;
             }
         }
 
-        function getToKnowYouQuestions(depth) {
+        function getConversationQuestions(depth) {
+            const lightQuestions = [
+                "What's your go-to karaoke song?",
+                "If you could have dinner with any fictional character, who would it be?",
+                "What's the weirdest food combination you actually enjoy?",
+                "What's your most embarrassing childhood memory?",
+                "If you could instantly become an expert in something, what would it be?",
+                "What's your guilty pleasure TV show or movie?",
+                "What would your wrestler entrance music be?",
+                "If you were a kitchen appliance, which one would you be?",
+                "What's the most ridiculous thing you've ever bought?",
+                "What's your signature dance move?",
+                "If you could live in any TV show universe, which would you choose?",
+                "What's the worst fashion trend you ever participated in?",
+                "What would your superhero name and power be?",
+                "What's your strangest talent or party trick?",
+                "If you could only eat one cuisine for the rest of your life, what would it be?",
+                "What's your most-played song right now?",
+                "If you were famous, what would you be famous for?",
+                "What's the best prank you've ever pulled or had pulled on you?",
+                "What movie can you quote the most?",
+                "What's your weirdest habit?",
+                "If you could be any animal for a day, what would you be?",
+                "What's the most spontaneous thing you've ever done?",
+                "What's your coffee/tea order?",
+                "If you could have any exotic pet (legally and safely), what would it be?",
+                "What's your phone wallpaper right now?",
+                "What's the last thing you Googled?",
+                "If you had a time machine but could only go back to embarrassing moments to relive them, would you use it?",
+                "What's your most controversial food opinion?",
+                "What would be the title of your autobiography?",
+                "What's a skill you wish you had but don't?",
+                "What's your ideal Saturday night?",
+                "If you could switch lives with anyone for a day, who would it be?",
+                "What's the most interesting place you've ever been?",
+                "What emoji do you use most often?",
+                "What's your favorite smell?",
+                "What app do you use most on your phone?",
+                "If you could eliminate one thing from your daily routine, what would it be?",
+                "What's your comfort food?",
+                "What's the best gift you've ever received?",
+                "What's a word or phrase you say too much?",
+            ];
+
+            const deepQuestions = [
+                "What do you think happens when we die?",
+                "If you knew you'd die in one year, what would you change about how you're living?",
+                "What's your biggest regret?",
+                "When do you feel most like yourself?",
+                "What's something you've never told anyone?",
+                "What would constitute a perfect day for you?",
+                "What do you value most in a friendship?",
+                "If you could wake up tomorrow having gained one quality or ability, what would it be?",
+                "Is there something you've dreamed of doing for a long time? Why haven't you done it?",
+                "What's your most treasured memory?",
+                "What's your most terrible memory?",
+                "If you knew that in one year you'd die suddenly, would you change anything about the way you're living now?",
+                "What roles do love and affection play in your life?",
+                "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
+                "What, if anything, is too serious to be joked about?",
+                "If you could change anything about the way you were raised, what would it be?",
+                "What do you consider your greatest accomplishment?",
+                "What do you want your legacy to be?",
+                "How do you hope you'll change as a person in the future?",
+                "What does friendship mean to you?",
+                "What life experiences have shaped you the most?",
+                "What's the hardest truth you've ever had to accept?",
+                "If you could ask for one miracle, what would it be?",
+                "What are you most grateful for?",
+                "What makes you feel most alive?",
+                "What do you think your purpose in life is?",
+                "What's a belief you had that completely changed?",
+                "When was the last time you cried and why?",
+                "What's something you're still trying to figure out about yourself?",
+                "If you could go back and give your younger self advice, what would it be?",
+                "What do you think is the key to a meaningful life?",
+                "What's a fear you're working to overcome?",
+                "What does love mean to you?",
+                "What would you do if you weren't afraid?",
+                "What's the most difficult decision you've ever had to make?",
+                "What do you wish more people knew about you?",
+                "How do you want to be remembered?",
+                "What's something you believe that most people don't?",
+                "What question do you wish people would ask you?",
+                "What part of your life do you wish you could experience again?",
+            ];
+
+            const spicyQuestions = [
+                "What's the most romantic thing someone has ever done for you?",
+                "What's your ideal first date?",
+                "What's the most adventurous thing on your bucket list?",
+                "What's your biggest turn-on?",
+                "What song always puts you in the mood?",
+                "What's your go-to move when you're trying to flirt?",
+                "What's the most memorable kiss you've ever had?",
+                "Where's the most unusual place you've kissed someone?",
+                "What's your love language?",
+                "What outfit makes you feel the most confident?",
+                "What's something that instantly catches your attention about someone?",
+                "What's your relationship deal-breaker?",
+                "What's the sweetest thing someone could do for you?",
+                "What's your ideal romantic getaway?",
+                "What would a perfect night in look like to you?",
+                "What's the most attractive quality in a partner?",
+                "What's something you find surprisingly attractive?",
+                "What's your biggest relationship green flag?",
+                "What makes you feel desired?",
+                "What's the most charming thing someone has said to you?",
+                "What's your favorite way to be touched?",
+                "What compliment do you never get tired of hearing?",
+                "What's the boldest thing you've ever done to get someone's attention?",
+                "What's your idea of the perfect kiss?",
+                "What smell is an instant aphrodisiac for you?",
+                "What's something you've always wanted to try with a partner?",
+                "What do you wear to bed?",
+                "What's your guilty pleasure romance movie or book?",
+                "What physical feature do you notice first?",
+                "What's the most romantic setting you can imagine?",
+                "What makes you feel sexy?",
+                "What's your favorite way to cuddle?",
+                "What's the most seductive thing you've ever worn?",
+                "What kind of touch drives you wild?",
+                "What's your favorite type of kiss?",
+                "What makes a kiss unforgettable?",
+                "What's the most attractive accent?",
+                "What's your favorite form of affection?",
+                "What instantly makes you attracted to someone?",
+                "What do you find irresistibly charming?",
+            ];
+
+            const mixedQuestions = [
+                // Mix of light (L) and deep (D) for variety
+                "What's the luckiest thing that's ever happened to you?", // L-Medium
+                "What are you most passionate about?", // D-Medium
+                "If you could relive one year of your life, which would it be?", // D-Medium
+                "What's your hidden talent?", // L
+                "What's something that recently made you smile?", // L
+                "What's your relationship with your parents like?", // D
+                "If you wrote a book, what would it be about?", // L-Medium
+                "What's something you're proud of but don't get to talk about much?", // D-Medium
+                "What's the best advice you've ever received?", // D-Medium
+                "What would your perfect day look like from start to finish?", // L-Medium
+                "What's something you wish you had said to someone but didn't?", // D
+                "What do you do to relax?", // L
+                "What's your biggest pet peeve?", // L
+                "What quality do you admire most in others?", // D-Medium
+                "If money wasn't an issue, what would you do with your time?", // L-Medium
+                "What's the most valuable lesson you've learned?", // D
+                "What's your morning routine like?", // L
+                "What do you think your friends would say about you?", // L-Medium
+                "What's something you're currently trying to improve about yourself?", // D-Medium
+                "What tradition means the most to you?", // L-Medium
+                "What makes you feel vulnerable?", // D
+                "What's your favorite way to spend time with people you care about?", // L-Medium
+                "What does success mean to you?", // D-Medium
+                "If you could master any skill overnight, what would it be?", // L
+                "What's something small that makes a big difference in your day?", // L
+                "How do you handle stress or difficult emotions?", // D-Medium
+                "What's the best decision you ever made?", // D-Medium
+                "What hobby would you get into if time and money weren't an issue?", // L
+                "What's your earliest memory?", // L-Medium
+                "What do you think your younger self would think of you now?", // D
+                "What's your favorite way to celebrate something?", // L
+                "What's a promise you made to yourself?", // D-Medium
+                "If you could have an endless supply of one thing, what would it be?", // L
+                "What do you wish you had more time for?", // L-Medium
+                "What personal trait has gotten you in trouble?", // L-Medium
+                "What are you most looking forward to?", // L-Medium
+                "What would your ideal home look like?", // L
+                "What's something that's harder than it looks?", // L
+                "What do you think about before falling asleep?", // D-Medium
+                "What's your favorite childhood memory?", // L-Medium
+                "What makes you feel understood?", // D
+                "If you could send a message to your future self, what would it say?", // D-Medium
+                "What's something that always makes you laugh?", // L
+                "What's the most interesting thing about you that people wouldn't guess?", // L-Medium
+                "How do you define happiness?", // D
+                "What would you do if you had an extra hour every day?", // L
+                "What's something you've had to unlearn?", // D-Medium
+                "What's your favorite way to treat yourself?", // L
+                "What do you think is your best quality?", // L-Medium
+                "What's a moment that changed your perspective?", // D
+                "If you could have dinner with three people, dead or alive, who would they be?", // L-Medium
+                "What's something you're looking forward to?", // L
+                "What's a question you hate being asked?", // L-Medium
+                "What do you think makes a good life?", // D
+                "What's your favorite thing about where you live?", // L
+                "What's something you want to do more of?", // L-Medium
+                "What role does spirituality or religion play in your life?", // D
+                "What's the best compliment you ever received?", // L-Medium
+                "What's something you've changed your mind about recently?", // D-Medium
+                "What's your ideal weekend?", // L
+                "What makes you feel at peace?", // D-Medium
+            ];
+
+            let questionPool;
+            if (depth === 'light') {
+                questionPool = lightQuestions;
+            } else if (depth === 'deep') {
+                questionPool = deepQuestions;
+            } else if (depth === 'spicy') {
+                questionPool = spicyQuestions;
+            } else {
+                questionPool = mixedQuestions;
+            }
+
+            // Convert to trivia format and shuffle
+            const formattedQuestions = questionPool.map(q => ({
+                question: q,
+                type: 'open-ended',
+                correct_answer: '',
+                incorrect_answers: []
+            }));
+
+            return formattedQuestions.sort(() => Math.random() - 0.5).slice(0, 10);
+        }
             const lightQuestions = [
                 "What's your go-to karaoke song?",
                 "If you could have dinner with any fictional character, who would it be?",
@@ -1089,8 +1348,15 @@
                 hard: hardQuestions
             };
 
-            // Shuffle and return 10 random questions from the selected difficulty
-            const selectedSet = questionSets[difficulty] || easyQuestions;
+            // Handle mixed difficulty or specific difficulty
+            let selectedSet;
+            if (difficulty === 'mixed') {
+                // Combine all difficulties and shuffle
+                selectedSet = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
+            } else {
+                selectedSet = questionSets[difficulty] || easyQuestions;
+            }
+            
             return selectedSet.sort(() => Math.random() - 0.5).slice(0, 10);
         }
 
@@ -1100,7 +1366,7 @@
             return txt.value;
         }
 
-        function displayGetToKnowYouQuestion() {
+        function displayConversationQuestion() {
             const question = questions[currentQuestion];
             
             const quizContent = document.getElementById('quiz-content');
@@ -1117,7 +1383,7 @@
                         <p style="color: #666; font-style: italic; margin-bottom: 24px;">
                             Take your time to think and share...
                         </p>
-                        <button class="reveal-btn" onclick="nextGetToKnowYouQuestion()">
+                        <button class="reveal-btn" onclick="nextConversationQuestion()">
                             ${currentQuestion < questions.length - 1 ? 'Next Question →' : 'Finish'}
                         </button>
                     </div>
@@ -1125,21 +1391,21 @@
             `;
         }
 
-        function nextGetToKnowYouQuestion() {
+        function nextConversationQuestion() {
             currentQuestion++;
             if (currentQuestion < questions.length) {
-                displayGetToKnowYouQuestion();
+                displayConversationQuestion();
             } else {
-                showGetToKnowYouResults();
+                showConversationResults();
             }
         }
 
-        function showGetToKnowYouResults() {
+        function showConversationResults() {
             const quizScreen = document.querySelector('.quiz-screen');
             const resultsScreen = document.querySelector('.results-screen');
             
-            // Customize results screen for Get to Know You
-            resultsScreen.querySelector('h1').textContent = '💭 Great Conversation!';
+            // Customize results screen for Conversation Starters
+            resultsScreen.querySelector('h1').textContent = '💬 Great Conversation!';
             resultsScreen.querySelector('.score-display').innerHTML = `
                 <div style="font-size: 18px; color: #666; max-width: 400px; margin: 0 auto;">
                     You've explored ${questions.length} meaningful questions together. 
@@ -1165,7 +1431,7 @@
                     </div>
                     <div class="question-text">${decodeHTML(question.question)}</div>
                     <div class="reveal-container">
-                        <button class="reveal-btn" onclick="revealAnswers()">Click to Reveal Answers</button>
+                        <button class="reveal-btn" onclick="revealAnswers()">Reveal Options</button>
                     </div>
                     <div class="answers hidden" id="answer-options">
                         ${answers.map(answer => `
