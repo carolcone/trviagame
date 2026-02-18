@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trivia Game</title>
+    <title>Over Drinks - Trivia Game</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #2d5f5d 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -85,14 +85,63 @@
 
         select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #d4a574;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .radio-option:hover {
+            border-color: #d4a574;
+            background: #fef9f3;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #d4a574;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            font-weight: 600;
+            color: #d4a574;
+        }
+
+        .radio-option:has(input[type="radio"]:checked) {
+            border-color: #d4a574;
+            background: #fef9f3;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+        }
+
+        .radio-label {
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            flex: 1;
         }
 
         button {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #b8956a 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -105,7 +154,7 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.4);
         }
 
         button:active {
@@ -145,7 +194,7 @@
         .question-number {
             font-size: 14px;
             font-weight: 600;
-            color: #667eea;
+            color: #d4a574;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -176,8 +225,8 @@
         }
 
         .answer-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
+            border-color: #d4a574;
+            background: #fef9f3;
             transform: translateY(-1px);
         }
 
@@ -206,7 +255,7 @@
         .score-number {
             font-size: 64px;
             font-weight: 700;
-            color: #667eea;
+            color: #d4a574;
             margin-bottom: 8px;
         }
 
@@ -269,22 +318,22 @@
         }
 
         .wheel-segment:nth-child(1) {
-            background: conic-gradient(from 0deg, #667eea 0deg 90deg, transparent 90deg);
+            background: conic-gradient(from 0deg, #d4a574 0deg 90deg, transparent 90deg);
             border-radius: 50%;
         }
 
         .wheel-segment:nth-child(2) {
-            background: conic-gradient(from 90deg, #764ba2 0deg 90deg, transparent 90deg);
+            background: conic-gradient(from 90deg, #2d5f5d 0deg 90deg, transparent 90deg);
             border-radius: 50%;
         }
 
         .wheel-segment:nth-child(3) {
-            background: conic-gradient(from 180deg, #f093fb 0deg 90deg, transparent 90deg);
+            background: conic-gradient(from 180deg, #e8c4a0 0deg 90deg, transparent 90deg);
             border-radius: 50%;
         }
 
         .wheel-segment:nth-child(4) {
-            background: conic-gradient(from 270deg, #4facfe 0deg 90deg, transparent 90deg);
+            background: conic-gradient(from 270deg, #3d7875 0deg 90deg, transparent 90deg);
             border-radius: 50%;
         }
 
@@ -307,7 +356,7 @@
         .loader-text {
             font-size: 20px;
             font-weight: 600;
-            color: #667eea;
+            color: #d4a574;
             animation: pulse 1.5s ease-in-out infinite;
         }
 
@@ -323,27 +372,17 @@
         }
 
         .reveal-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #d4a574 0%, #b8956a 100%);
             padding: 20px 48px;
             font-size: 18px;
             font-weight: 700;
             border-radius: 16px;
-            animation: buttonGlow 2s ease-in-out infinite;
-            box-shadow: 0 8px 24px rgba(240, 147, 251, 0.4);
+            box-shadow: 0 8px 24px rgba(212, 165, 116, 0.4);
         }
 
         .reveal-btn:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 32px rgba(240, 147, 251, 0.6);
-        }
-
-        @keyframes buttonGlow {
-            0%, 100% {
-                box-shadow: 0 8px 24px rgba(240, 147, 251, 0.4);
-            }
-            50% {
-                box-shadow: 0 8px 32px rgba(240, 147, 251, 0.7);
-            }
+            box-shadow: 0 12px 32px rgba(212, 165, 116, 0.6);
         }
 
         .answers.hidden {
@@ -370,36 +409,59 @@
     <div class="container">
         <!-- Setup Screen -->
         <div class="setup-screen active">
-            <h1>🎯 Trivia Game</h1>
-            <p class="subtitle">Choose your category and difficulty</p>
+            <h1>🍹 Over Drinks</h1>
+            <p class="subtitle">Pick your poison, choose your challenge</p>
             
             <div class="form-group">
+                <label>Mode</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="mode" value="trivia" checked>
+                        <span class="radio-label">🎯 Trivia Questions</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="mode" value="gettoknowyou">
+                        <span class="radio-label">💭 Get to Know You</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="category-group">
                 <label>Category</label>
                 <select id="category">
-                    <option value="superbowl">🏈 Super Bowl (Today Only!)</option>
-                    <option value="9">General Knowledge</option>
-                    <option value="10">Books</option>
-                    <option value="11">Film</option>
-                    <option value="12">Music</option>
-                    <option value="14">Television</option>
-                    <option value="15">Video Games</option>
-                    <option value="17">Science & Nature</option>
-                    <option value="18">Computers</option>
-                    <option value="19">Mathematics</option>
-                    <option value="20">Mythology</option>
-                    <option value="21">Sports</option>
-                    <option value="22">Geography</option>
-                    <option value="23">History</option>
-                    <option value="27">Animals</option>
+                    <option value="27">🐾 Animals</option>
+                    <option value="10">📚 Books</option>
+                    <option value="18">💻 Computers</option>
+                    <option value="11">🎬 Film</option>
+                    <option value="9">🌍 General Knowledge</option>
+                    <option value="22">🗺️ Geography</option>
+                    <option value="23">🏛️ History</option>
+                    <option value="holiday">🎄 Holiday</option>
+                    <option value="19">➗ Mathematics</option>
+                    <option value="12">🎵 Music</option>
+                    <option value="20">⚡ Mythology</option>
+                    <option value="17">🔬 Science & Nature</option>
+                    <option value="21">⚽ Sports</option>
+                    <option value="14">📺 Television</option>
+                    <option value="15">🎮 Video Games</option>
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="difficulty-group">
                 <label>Difficulty</label>
                 <select id="difficulty">
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="depth-group" style="display: none;">
+                <label>Question Depth</label>
+                <select id="depth">
+                    <option value="mixed">🎲 Mixed (Light & Deep)</option>
+                    <option value="light">☀️ Light & Fun</option>
+                    <option value="deep">🌙 Deep & Meaningful</option>
                 </select>
             </div>
 
@@ -427,9 +489,35 @@
         let currentQuestion = 0;
         let score = 0;
 
+        // Toggle between trivia and get to know you mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const modeRadios = document.querySelectorAll('input[name="mode"]');
+            const categoryGroup = document.getElementById('category-group');
+            const difficultyGroup = document.getElementById('difficulty-group');
+            const depthGroup = document.getElementById('depth-group');
+            
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'gettoknowyou') {
+                        categoryGroup.style.display = 'none';
+                        difficultyGroup.style.display = 'none';
+                        depthGroup.style.display = 'block';
+                    } else {
+                        categoryGroup.style.display = 'block';
+                        difficultyGroup.style.display = 'block';
+                        depthGroup.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         async function startQuiz() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
             const category = document.getElementById('category').value;
             const difficulty = document.getElementById('difficulty').value;
+            const depth = document.getElementById('depth').value;
+            
+            console.log('Starting with mode:', mode, 'category:', category, 'difficulty:', difficulty);
             
             const setupScreen = document.querySelector('.setup-screen');
             const quizScreen = document.querySelector('.quiz-screen');
@@ -443,203 +531,555 @@
                         <div class="wheel-segment"></div>
                         <div class="wheel-segment"></div>
                         <div class="wheel-segment"></div>
-                        <div class="wheel-center">🎯</div>
+                        <div class="wheel-center">🍸</div>
                     </div>
-                    <div class="loader-text">Preparing your trivia...</div>
+                    <div class="loader-text">Preparing your questions...</div>
                 </div>
             `;
             setupScreen.classList.remove('active');
             quizScreen.classList.add('active');
 
             try {
-                // Super Bowl special category
-                if (category === 'superbowl') {
-                    await new Promise(resolve => setTimeout(resolve, 2200)); // Wait for animation
-                    questions = getSuperBowlQuestions(difficulty);
+                await new Promise(resolve => setTimeout(resolve, 2200)); // Wait for animation
+                
+                // Get to Know You mode
+                if (mode === 'gettoknowyou') {
+                    console.log('Loading Get to Know You questions...');
+                    questions = getToKnowYouQuestions(depth);
+                    console.log('Got questions:', questions.length);
+                    currentQuestion = 0;
+                    score = 0; // Not really scoring but keeping structure
+                    displayGetToKnowYouQuestion();
+                    return;
+                }
+                
+                // Holiday special category
+                if (category === 'holiday') {
+                    console.log('Loading Holiday questions...');
+                    questions = getHolidayQuestions(difficulty);
+                    console.log('Got questions:', questions.length);
                     currentQuestion = 0;
                     score = 0;
                     displayQuestion();
                     return;
                 }
 
-                const response = await fetch(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`);
+                // Try to fetch from API with CORS proxy
+                console.log('Fetching questions from API...');
+                const apiUrl = `https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`;
+                console.log('API URL:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                console.log('Response status:', response.status);
+                
                 const data = await response.json();
+                console.log('API Response:', data);
                 
                 if (data.response_code !== 0) {
-                    throw new Error('Failed to load questions');
+                    throw new Error(`API returned error code: ${data.response_code}`);
                 }
                 
-                await new Promise(resolve => setTimeout(resolve, 2200)); // Wait for animation
+                if (!data.results || data.results.length === 0) {
+                    throw new Error('No questions returned from API');
+                }
                 
                 questions = data.results;
                 currentQuestion = 0;
                 score = 0;
+                console.log('Displaying question...');
                 displayQuestion();
             } catch (error) {
+                console.error('Error loading questions:', error);
                 quizContent.innerHTML = `
-                    <div class="error">Failed to load questions. Please try again.</div>
+                    <div class="error">
+                        <strong>Failed to load questions</strong><br>
+                        Error: ${error.message}<br><br>
+                        ${category !== 'holiday' && mode !== 'gettoknowyou' ? 'The trivia API might be blocked by your browser or network.<br>Try the Holiday category or Get to Know You mode instead!' : 'Please try again.'}
+                    </div>
                     <button onclick="resetQuiz()">Back to Setup</button>
                 `;
             }
         }
 
-        function getSuperBowlQuestions(difficulty) {
+        function getToKnowYouQuestions(depth) {
+            const lightQuestions = [
+                "What's your go-to karaoke song?",
+                "If you could have dinner with any fictional character, who would it be?",
+                "What's the weirdest food combination you actually enjoy?",
+                "What's your most embarrassing childhood memory?",
+                "If you could instantly become an expert in something, what would it be?",
+                "What's your guilty pleasure TV show or movie?",
+                "What would your wrestler entrance music be?",
+                "If you were a kitchen appliance, which one would you be?",
+                "What's the most ridiculous thing you've ever bought?",
+                "What's your signature dance move?",
+                "If you could live in any TV show universe, which would you choose?",
+                "What's the worst fashion trend you ever participated in?",
+                "What would your superhero name and power be?",
+                "What's your strangest talent or party trick?",
+                "If you could only eat one cuisine for the rest of your life, what would it be?",
+                "What's your most-played song right now?",
+                "If you were famous, what would you be famous for?",
+                "What's the best prank you've ever pulled or had pulled on you?",
+                "What movie can you quote the most?",
+                "What's your weirdest habit?",
+                "If you could be any animal for a day, what would you be?",
+                "What's the most spontaneous thing you've ever done?",
+                "What's your coffee/tea order?",
+                "If you could have any exotic pet (legally and safely), what would it be?",
+                "What's your phone wallpaper right now?",
+                "What's the last thing you Googled?",
+                "If you had a time machine but could only go back to embarrassing moments to relive them, would you use it?",
+                "What's your most controversial food opinion?",
+                "What would be the title of your autobiography?",
+                "What's a skill you wish you had but don't?",
+                "What's your ideal Saturday night?",
+                "If you could switch lives with anyone for a day, who would it be?",
+                "What's the most interesting place you've ever been?",
+                "What emoji do you use most often?",
+                "What's your favorite smell?",
+                "What app do you use most on your phone?",
+                "If you could eliminate one thing from your daily routine, what would it be?",
+                "What's your comfort food?",
+                "What's the best gift you've ever received?",
+                "What's a word or phrase you say too much?",
+            ];
+
+            const deepQuestions = [
+                "What do you think happens when we die?",
+                "If you knew you'd die in one year, what would you change about how you're living?",
+                "What's your biggest regret?",
+                "When do you feel most like yourself?",
+                "What's something you've never told anyone?",
+                "What would constitute a perfect day for you?",
+                "What do you value most in a friendship?",
+                "If you could wake up tomorrow having gained one quality or ability, what would it be?",
+                "Is there something you've dreamed of doing for a long time? Why haven't you done it?",
+                "What's your most treasured memory?",
+                "What's your most terrible memory?",
+                "If you knew that in one year you'd die suddenly, would you change anything about the way you're living now?",
+                "What roles do love and affection play in your life?",
+                "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
+                "What, if anything, is too serious to be joked about?",
+                "If you could change anything about the way you were raised, what would it be?",
+                "What do you consider your greatest accomplishment?",
+                "What do you want your legacy to be?",
+                "How do you hope you'll change as a person in the future?",
+                "What does friendship mean to you?",
+                "What life experiences have shaped you the most?",
+                "What's the hardest truth you've ever had to accept?",
+                "If you could ask for one miracle, what would it be?",
+                "What are you most grateful for?",
+                "What makes you feel most alive?",
+                "What do you think your purpose in life is?",
+                "What's a belief you had that completely changed?",
+                "When was the last time you cried and why?",
+                "What's something you're still trying to figure out about yourself?",
+                "If you could go back and give your younger self advice, what would it be?",
+                "What do you think is the key to a meaningful life?",
+                "What's a fear you're working to overcome?",
+                "What does love mean to you?",
+                "What would you do if you weren't afraid?",
+                "What's the most difficult decision you've ever had to make?",
+                "What do you wish more people knew about you?",
+                "How do you want to be remembered?",
+                "What's something you believe that most people don't?",
+                "What question do you wish people would ask you?",
+                "What part of your life do you wish you could experience again?",
+            ];
+
+            const mixedQuestions = [
+                // Mix of light (L) and deep (D) for variety
+                "What's the luckiest thing that's ever happened to you?", // L-Medium
+                "What are you most passionate about?", // D-Medium
+                "If you could relive one year of your life, which would it be?", // D-Medium
+                "What's your hidden talent?", // L
+                "What's something that recently made you smile?", // L
+                "What's your relationship with your parents like?", // D
+                "If you wrote a book, what would it be about?", // L-Medium
+                "What's something you're proud of but don't get to talk about much?", // D-Medium
+                "What's the best advice you've ever received?", // D-Medium
+                "What would your perfect day look like from start to finish?", // L-Medium
+                "What's something you wish you had said to someone but didn't?", // D
+                "What do you do to relax?", // L
+                "What's your biggest pet peeve?", // L
+                "What quality do you admire most in others?", // D-Medium
+                "If money wasn't an issue, what would you do with your time?", // L-Medium
+                "What's the most valuable lesson you've learned?", // D
+                "What's your morning routine like?", // L
+                "What do you think your friends would say about you?", // L-Medium
+                "What's something you're currently trying to improve about yourself?", // D-Medium
+                "What tradition means the most to you?", // L-Medium
+                "What makes you feel vulnerable?", // D
+                "What's your favorite way to spend time with people you care about?", // L-Medium
+                "What does success mean to you?", // D-Medium
+                "If you could master any skill overnight, what would it be?", // L
+                "What's something small that makes a big difference in your day?", // L
+                "How do you handle stress or difficult emotions?", // D-Medium
+                "What's the best decision you ever made?", // D-Medium
+                "What hobby would you get into if time and money weren't an issue?", // L
+                "What's your earliest memory?", // L-Medium
+                "What do you think your younger self would think of you now?", // D
+                "What's your favorite way to celebrate something?", // L
+                "What's a promise you made to yourself?", // D-Medium
+                "If you could have an endless supply of one thing, what would it be?", // L
+                "What do you wish you had more time for?", // L-Medium
+                "What personal trait has gotten you in trouble?", // L-Medium
+                "What are you most looking forward to?", // L-Medium
+                "What would your ideal home look like?", // L
+                "What's something that's harder than it looks?", // L
+                "What do you think about before falling asleep?", // D-Medium
+                "What's your favorite childhood memory?", // L-Medium
+                "What makes you feel understood?", // D
+                "If you could send a message to your future self, what would it say?", // D-Medium
+                "What's something that always makes you laugh?", // L
+                "What's the most interesting thing about you that people wouldn't guess?", // L-Medium
+                "How do you define happiness?", // D
+                "What would you do if you had an extra hour every day?", // L
+                "What's something you've had to unlearn?", // D-Medium
+                "What's your favorite way to treat yourself?", // L
+                "What do you think is your best quality?", // L-Medium
+                "What's a moment that changed your perspective?", // D
+                "If you could have dinner with three people, dead or alive, who would they be?", // L-Medium
+                "What's something you're looking forward to?", // L
+                "What's a question you hate being asked?", // L-Medium
+                "What do you think makes a good life?", // D
+                "What's your favorite thing about where you live?", // L
+                "What's something you want to do more of?", // L-Medium
+                "What role does spirituality or religion play in your life?", // D
+                "What's the best compliment you ever received?", // L-Medium
+                "What's something you've changed your mind about recently?", // D-Medium
+                "What's your ideal weekend?", // L
+                "What makes you feel at peace?", // D-Medium
+            ];
+
+            let questionPool;
+            if (depth === 'light') {
+                questionPool = lightQuestions;
+            } else if (depth === 'deep') {
+                questionPool = deepQuestions;
+            } else {
+                questionPool = mixedQuestions;
+            }
+
+            // Convert to trivia format and shuffle
+            const formattedQuestions = questionPool.map(q => ({
+                question: q,
+                type: 'open-ended',
+                correct_answer: '',
+                incorrect_answers: []
+            }));
+
+            return formattedQuestions.sort(() => Math.random() - 0.5).slice(0, 10);
+        }
+
+        function getHolidayQuestions(difficulty) {
             const easyQuestions = [
                 {
-                    question: "Which two teams are playing in today's Super Bowl?",
-                    correct_answer: "Patriots vs Seahawks",
-                    incorrect_answers: ["Cowboys vs Steelers", "Packers vs Chiefs", "49ers vs Ravens"]
+                    question: "What color is Santa Claus's suit?",
+                    correct_answer: "Red and white",
+                    incorrect_answers: ["Green and white", "Blue and white", "Red and black"]
                 },
                 {
-                    question: "What is the name of the championship game in the NFL?",
-                    correct_answer: "Super Bowl",
-                    incorrect_answers: ["NFL Finals", "Championship Bowl", "Pro Bowl"]
+                    question: "What holiday is celebrated on December 25th?",
+                    correct_answer: "Christmas",
+                    incorrect_answers: ["Hanukkah", "Kwanzaa", "New Year's Day"]
                 },
                 {
-                    question: "How many points is a touchdown worth?",
-                    correct_answer: "6 points",
-                    incorrect_answers: ["7 points", "5 points", "3 points"]
+                    question: "What do children leave out for Santa on Christmas Eve?",
+                    correct_answer: "Milk and cookies",
+                    incorrect_answers: ["Pizza and soda", "Cake and juice", "Candy and water"]
                 },
                 {
-                    question: "What city is known as the birthplace of the Patriots?",
-                    correct_answer: "Boston",
-                    incorrect_answers: ["New York", "Philadelphia", "Chicago"]
+                    question: "What is the name of the reindeer with a red nose?",
+                    correct_answer: "Rudolph",
+                    incorrect_answers: ["Dasher", "Prancer", "Blitzen"]
                 },
                 {
-                    question: "What is the Seattle Seahawks' primary team color?",
-                    correct_answer: "Navy blue and green",
-                    incorrect_answers: ["Red and gold", "Purple and gold", "Orange and blue"]
+                    question: "What do people kiss under during Christmas time?",
+                    correct_answer: "Mistletoe",
+                    incorrect_answers: ["Holly", "Pine tree", "Wreath"]
                 },
                 {
-                    question: "How many quarters are in a football game?",
-                    correct_answer: "4",
-                    incorrect_answers: ["3", "2", "5"]
+                    question: "What holiday celebrates the beginning of a new year?",
+                    correct_answer: "New Year's Day",
+                    incorrect_answers: ["Christmas", "Valentine's Day", "Easter"]
                 },
                 {
-                    question: "What is the halftime show at the Super Bowl famous for?",
-                    correct_answer: "Celebrity musical performances",
-                    incorrect_answers: ["Fireworks display", "Comedy sketches", "Award ceremonies"]
+                    question: "What orange vegetable is associated with Halloween?",
+                    correct_answer: "Pumpkin",
+                    incorrect_answers: ["Carrot", "Sweet potato", "Squash"]
                 },
                 {
-                    question: "What do you call it when a team scores by kicking the ball through the uprights?",
-                    correct_answer: "Field goal",
-                    incorrect_answers: ["Touchdown", "Safety", "Extra point"]
+                    question: "What do kids say when trick-or-treating?",
+                    correct_answer: "Trick or treat",
+                    incorrect_answers: ["Give me candy", "Happy Halloween", "Boo"]
                 },
                 {
-                    question: "Which conference does the Seattle Seahawks play in?",
-                    correct_answer: "NFC",
-                    incorrect_answers: ["AFC", "SEC", "PAC"]
+                    question: "What holiday is known for giving thanks?",
+                    correct_answer: "Thanksgiving",
+                    incorrect_answers: ["Christmas", "Easter", "Labor Day"]
                 },
                 {
-                    question: "What animal is the Patriots' mascot?",
-                    correct_answer: "Pat Patriot (minuteman)",
-                    incorrect_answers: ["Eagle", "Bear", "Lion"]
+                    question: "What holiday celebrates love on February 14th?",
+                    correct_answer: "Valentine's Day",
+                    incorrect_answers: ["Mother's Day", "Father's Day", "Easter"]
+                },
+                {
+                    question: "What bird is traditionally eaten at Thanksgiving?",
+                    correct_answer: "Turkey",
+                    incorrect_answers: ["Chicken", "Duck", "Goose"]
+                },
+                {
+                    question: "What do people wear on St. Patrick's Day?",
+                    correct_answer: "Green clothing",
+                    incorrect_answers: ["Orange clothing", "Red clothing", "Blue clothing"]
+                },
+                {
+                    question: "What holiday involves hunting for eggs?",
+                    correct_answer: "Easter",
+                    incorrect_answers: ["Christmas", "Halloween", "Thanksgiving"]
+                },
+                {
+                    question: "What Jewish holiday lasts for eight nights?",
+                    correct_answer: "Hanukkah",
+                    incorrect_answers: ["Passover", "Yom Kippur", "Rosh Hashanah"]
+                },
+                {
+                    question: "What month is Independence Day celebrated in the USA?",
+                    correct_answer: "July",
+                    incorrect_answers: ["June", "August", "September"]
+                },
+                {
+                    question: "What are small decorations hung on a Christmas tree called?",
+                    correct_answer: "Ornaments",
+                    incorrect_answers: ["Decorations", "Baubles", "Trinkets"]
+                },
+                {
+                    question: "What do children receive on Valentine's Day?",
+                    correct_answer: "Cards and candy",
+                    incorrect_answers: ["Eggs", "Toys", "Money"]
+                },
+                {
+                    question: "What is placed on top of a Christmas tree?",
+                    correct_answer: "Star or angel",
+                    incorrect_answers: ["Ornament", "Bow", "Bell"]
+                },
+                {
+                    question: "What Mexican holiday honors deceased loved ones?",
+                    correct_answer: "Day of the Dead",
+                    incorrect_answers: ["Cinco de Mayo", "Mexican Independence Day", "Las Posadas"]
+                },
+                {
+                    question: "What holiday celebrates workers on the first Monday in September?",
+                    correct_answer: "Labor Day",
+                    incorrect_answers: ["Memorial Day", "Presidents Day", "Veterans Day"]
                 }
             ];
 
             const mediumQuestions = [
                 {
-                    question: "Who is the head coach of the New England Patriots?",
-                    correct_answer: "Bill Belichick",
-                    incorrect_answers: ["Pete Carroll", "Andy Reid", "Sean Payton"]
+                    question: "In what country did the tradition of the Christmas tree originate?",
+                    correct_answer: "Germany",
+                    incorrect_answers: ["England", "United States", "France"]
                 },
                 {
-                    question: "In what year did the Seattle Seahawks join the NFL?",
-                    correct_answer: "1976",
-                    incorrect_answers: ["1980", "1972", "1984"]
+                    question: "What are the traditional colors of Hanukkah?",
+                    correct_answer: "Blue and white",
+                    incorrect_answers: ["Red and green", "Gold and silver", "Purple and yellow"]
                 },
                 {
-                    question: "What is the name of the Seahawks' home stadium?",
-                    correct_answer: "Lumen Field",
-                    incorrect_answers: ["CenturyLink Field", "Seahawks Stadium", "Northwest Arena"]
+                    question: "What is the day after Thanksgiving called?",
+                    correct_answer: "Black Friday",
+                    incorrect_answers: ["Cyber Monday", "Super Saturday", "Shopping Sunday"]
                 },
                 {
-                    question: "How many Super Bowls had the Patriots won before today?",
-                    correct_answer: "Multiple championships",
-                    incorrect_answers: ["Never won", "One", "Two"]
+                    question: "How many candles are on a Hanukkah menorah?",
+                    correct_answer: "Nine",
+                    incorrect_answers: ["Seven", "Eight", "Ten"]
                 },
                 {
-                    question: "What is the Patriots' home stadium called?",
-                    correct_answer: "Gillette Stadium",
-                    incorrect_answers: ["Foxboro Arena", "New England Stadium", "Patriots Field"]
+                    question: "What is the name of the Grinch's dog?",
+                    correct_answer: "Max",
+                    incorrect_answers: ["Buddy", "Spike", "Rex"]
                 },
                 {
-                    question: "Who is known as the '12th Man' in Seattle?",
-                    correct_answer: "The fans",
-                    incorrect_answers: ["The backup quarterback", "The mascot", "The coach"]
+                    question: "What date is Halloween celebrated?",
+                    correct_answer: "October 31st",
+                    incorrect_answers: ["October 30th", "November 1st", "October 25th"]
                 },
                 {
-                    question: "What iconic trophy is awarded to the Super Bowl winner?",
-                    correct_answer: "Vince Lombardi Trophy",
-                    incorrect_answers: ["Heisman Trophy", "Super Bowl Cup", "NFL Championship Trophy"]
+                    question: "What plant is associated with Christmas and has red berries?",
+                    correct_answer: "Holly",
+                    incorrect_answers: ["Mistletoe", "Ivy", "Poinsettia"]
                 },
                 {
-                    question: "Which division do the Patriots play in?",
-                    correct_answer: "AFC East",
-                    incorrect_answers: ["NFC East", "AFC North", "AFC South"]
+                    question: "In what city does the famous New Year's Eve ball drop take place?",
+                    correct_answer: "New York City",
+                    incorrect_answers: ["Los Angeles", "Chicago", "Las Vegas"]
                 },
                 {
-                    question: "What year did the Seahawks win their first Super Bowl?",
-                    correct_answer: "2013 (Super Bowl XLVIII)",
-                    incorrect_answers: ["2005", "2010", "2015"]
+                    question: "How many nights does Kwanzaa last?",
+                    correct_answer: "Seven",
+                    incorrect_answers: ["Five", "Eight", "Ten"]
                 },
                 {
-                    question: "How long is a regulation NFL football field including end zones?",
-                    correct_answer: "120 yards",
-                    incorrect_answers: ["100 yards", "110 yards", "150 yards"]
+                    question: "What is the traditional meat served at an Easter meal?",
+                    correct_answer: "Ham",
+                    incorrect_answers: ["Turkey", "Beef", "Chicken"]
+                },
+                {
+                    question: "What is the name of the candelabra used during Hanukkah?",
+                    correct_answer: "Menorah",
+                    incorrect_answers: ["Kinara", "Candelabrum", "Candle holder"]
+                },
+                {
+                    question: "What do the colors of Kwanzaa represent?",
+                    correct_answer: "African heritage",
+                    incorrect_answers: ["Peace and love", "Harvest", "Unity"]
+                },
+                {
+                    question: "What carol contains the lyrics 'Fa la la la la'?",
+                    correct_answer: "Deck the Halls",
+                    incorrect_answers: ["Jingle Bells", "Silent Night", "Joy to the World"]
+                },
+                {
+                    question: "What flower is most associated with Day of the Dead?",
+                    correct_answer: "Marigold",
+                    incorrect_answers: ["Rose", "Lily", "Carnation"]
+                },
+                {
+                    question: "What is the four-sided spinning top used during Hanukkah called?",
+                    correct_answer: "Dreidel",
+                    incorrect_answers: ["Menorah", "Gelt", "Latke"]
+                },
+                {
+                    question: "What parade is famous for Thanksgiving Day?",
+                    correct_answer: "Macy's Thanksgiving Parade",
+                    incorrect_answers: ["Rose Parade", "Mardi Gras", "St. Patrick's Day Parade"]
+                },
+                {
+                    question: "What is the day before All Saints' Day called?",
+                    correct_answer: "All Hallows' Eve (Halloween)",
+                    incorrect_answers: ["All Souls' Day", "Day of the Dead", "Samhain"]
+                },
+                {
+                    question: "What sauce is traditionally served with Thanksgiving turkey?",
+                    correct_answer: "Cranberry sauce",
+                    incorrect_answers: ["Apple sauce", "Mint sauce", "Gravy"]
+                },
+                {
+                    question: "In Mexico, what is eaten on Three Kings Day?",
+                    correct_answer: "Rosca de Reyes (King Cake)",
+                    incorrect_answers: ["Tamales", "Churros", "Pan dulce"]
+                },
+                {
+                    question: "What is the name of the Easter Bunny in some traditions?",
+                    correct_answer: "Peter Rabbit",
+                    incorrect_answers: ["Bugs Bunny", "Thumper", "Roger Rabbit"]
                 }
             ];
 
             const hardQuestions = [
                 {
-                    question: "In what year did Pete Carroll become head coach of the Seahawks?",
-                    correct_answer: "2010",
-                    incorrect_answers: ["2008", "2012", "2006"]
+                    question: "What ancient Roman festival is believed to have influenced Valentine's Day?",
+                    correct_answer: "Lupercalia",
+                    incorrect_answers: ["Saturnalia", "Bacchanalia", "Floralia"]
                 },
                 {
-                    question: "What was the Patriots' original name when they were founded in 1960?",
-                    correct_answer: "Boston Patriots",
-                    incorrect_answers: ["New England Patriots", "Massachusetts Patriots", "Foxboro Patriots"]
+                    question: "In what year did Thanksgiving become a national holiday in the US?",
+                    correct_answer: "1863",
+                    incorrect_answers: ["1776", "1845", "1901"]
                 },
                 {
-                    question: "Who caught the famous 'Immaculate Reception' in NFL playoff history?",
-                    correct_answer: "Franco Harris",
-                    incorrect_answers: ["Lynn Swann", "John Stallworth", "Terry Bradshaw"]
+                    question: "What is the origin of the word 'Hanukkah'?",
+                    correct_answer: "Hebrew word for 'dedication'",
+                    incorrect_answers: ["Greek word for 'light'", "Aramaic word for 'miracle'", "Hebrew word for 'oil'"]
                 },
                 {
-                    question: "What unique architectural feature is Lumen Field known for?",
-                    correct_answer: "Open north end with partial roof",
-                    incorrect_answers: ["Retractable roof", "Completely enclosed", "Glass dome"]
+                    question: "Which US president made Christmas a federal holiday?",
+                    correct_answer: "Ulysses S. Grant",
+                    incorrect_answers: ["Abraham Lincoln", "Theodore Roosevelt", "George Washington"]
                 },
                 {
-                    question: "How many times did Bill Belichick win NFL Coach of the Year?",
-                    correct_answer: "Three times",
-                    incorrect_answers: ["Five times", "Once", "Never"]
+                    question: "What does the German word 'Oktoberfest' literally translate to?",
+                    correct_answer: "October Festival",
+                    incorrect_answers: ["Beer Festival", "Harvest Festival", "Autumn Celebration"]
                 },
                 {
-                    question: "What college did Russell Wilson attend before the NFL?",
-                    correct_answer: "Wisconsin (transferred from NC State)",
-                    incorrect_answers: ["USC", "Oregon", "Alabama"]
+                    question: "What does 'Kwanzaa' mean in Swahili?",
+                    correct_answer: "First fruits",
+                    incorrect_answers: ["Unity", "Harvest", "Celebration"]
                 },
                 {
-                    question: "In what Super Bowl did the Patriots complete a perfect 16-0 regular season?",
-                    correct_answer: "Super Bowl XLII (but lost to Giants)",
-                    incorrect_answers: ["Super Bowl XXXIX", "Super Bowl LI", "Super Bowl XLIX"]
+                    question: "In what year was the first Macy's Thanksgiving Day Parade held?",
+                    correct_answer: "1924",
+                    incorrect_answers: ["1912", "1935", "1940"]
                 },
                 {
-                    question: "What is the official NFL record for loudest crowd noise, set by Seahawks fans?",
-                    correct_answer: "137.6 decibels",
-                    incorrect_answers: ["125.3 decibels", "142.8 decibels", "130.1 decibels"]
+                    question: "What is the Yule log tradition's pagan origin?",
+                    correct_answer: "Norse winter solstice celebration",
+                    incorrect_answers: ["Roman Saturnalia", "Celtic Samhain", "Greek Dionysia"]
                 },
                 {
-                    question: "Who did the Seahawks defeat to win Super Bowl XLVIII?",
-                    correct_answer: "Denver Broncos",
-                    incorrect_answers: ["New England Patriots", "Pittsburgh Steelers", "San Francisco 49ers"]
+                    question: "What year was the first Times Square New Year's Eve ball drop?",
+                    correct_answer: "1907",
+                    incorrect_answers: ["1895", "1920", "1901"]
                 },
                 {
-                    question: "What was the final score of the Seahawks' Super Bowl XLVIII victory?",
-                    correct_answer: "43-8",
-                    incorrect_answers: ["35-21", "28-24", "31-17"]
+                    question: "What is the ancient Celtic festival that Halloween originated from?",
+                    correct_answer: "Samhain",
+                    incorrect_answers: ["Beltane", "Imbolc", "Lughnasadh"]
+                },
+                {
+                    question: "Who wrote 'A Christmas Carol'?",
+                    correct_answer: "Charles Dickens",
+                    incorrect_answers: ["Mark Twain", "Edgar Allan Poe", "Washington Irving"]
+                },
+                {
+                    question: "What is the Mexican Day of the Dead's indigenous origin?",
+                    correct_answer: "Aztec festival honoring Mictecacihuatl",
+                    incorrect_answers: ["Mayan harvest festival", "Incan sun celebration", "Olmec ancestor worship"]
+                },
+                {
+                    question: "In what year did Kwanzaa first begin?",
+                    correct_answer: "1966",
+                    incorrect_answers: ["1955", "1970", "1980"]
+                },
+                {
+                    question: "What is the traditional Hanukkah food made from potatoes?",
+                    correct_answer: "Latkes",
+                    incorrect_answers: ["Knish", "Kugel", "Blintzes"]
+                },
+                {
+                    question: "Who created Kwanzaa?",
+                    correct_answer: "Maulana Karenga",
+                    incorrect_answers: ["Marcus Garvey", "Malcolm X", "Martin Luther King Jr."]
+                },
+                {
+                    question: "What is the Boxing Day tradition's original purpose?",
+                    correct_answer: "Giving gifts to servants and tradespeople",
+                    incorrect_answers: ["Boxing match competitions", "Returning unwanted gifts", "Charity donations"]
+                },
+                {
+                    question: "In what year did Coca-Cola first use Santa Claus in advertising?",
+                    correct_answer: "1931",
+                    incorrect_answers: ["1920", "1945", "1915"]
+                },
+                {
+                    question: "What is the dreidel game's historical significance?",
+                    correct_answer: "Jews disguised Torah study as gambling",
+                    incorrect_answers: ["Celebration of oil miracle", "Teaching Hebrew letters", "Commemorating temple victory"]
+                },
+                {
+                    question: "What Roman festival influenced many Christmas traditions?",
+                    correct_answer: "Saturnalia",
+                    incorrect_answers: ["Lupercalia", "Bacchanalia", "Cerealia"]
+                },
+                {
+                    question: "Who was the first US president to pardon a Thanksgiving turkey?",
+                    correct_answer: "George H.W. Bush (officially)",
+                    incorrect_answers: ["Abraham Lincoln", "Harry Truman", "John F. Kennedy"]
                 }
             ];
 
@@ -649,13 +1089,66 @@
                 hard: hardQuestions
             };
 
-            return questionSets[difficulty] || easyQuestions;
+            // Shuffle and return 10 random questions from the selected difficulty
+            const selectedSet = questionSets[difficulty] || easyQuestions;
+            return selectedSet.sort(() => Math.random() - 0.5).slice(0, 10);
         }
 
         function decodeHTML(html) {
             const txt = document.createElement('textarea');
             txt.innerHTML = html;
             return txt.value;
+        }
+
+        function displayGetToKnowYouQuestion() {
+            const question = questions[currentQuestion];
+            
+            const quizContent = document.getElementById('quiz-content');
+            quizContent.innerHTML = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-number">Question ${currentQuestion + 1} of ${questions.length}</span>
+                        <button class="back-btn" onclick="resetQuiz()">← Back</button>
+                    </div>
+                    <div class="question-text" style="font-size: 24px; text-align: center; padding: 40px 20px;">
+                        ${question.question}
+                    </div>
+                    <div style="text-align: center; margin-top: 40px;">
+                        <p style="color: #666; font-style: italic; margin-bottom: 24px;">
+                            Take your time to think and share...
+                        </p>
+                        <button class="reveal-btn" onclick="nextGetToKnowYouQuestion()">
+                            ${currentQuestion < questions.length - 1 ? 'Next Question →' : 'Finish'}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextGetToKnowYouQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                displayGetToKnowYouQuestion();
+            } else {
+                showGetToKnowYouResults();
+            }
+        }
+
+        function showGetToKnowYouResults() {
+            const quizScreen = document.querySelector('.quiz-screen');
+            const resultsScreen = document.querySelector('.results-screen');
+            
+            // Customize results screen for Get to Know You
+            resultsScreen.querySelector('h1').textContent = '💭 Great Conversation!';
+            resultsScreen.querySelector('.score-display').innerHTML = `
+                <div style="font-size: 18px; color: #666; max-width: 400px; margin: 0 auto;">
+                    You've explored ${questions.length} meaningful questions together. 
+                    These conversations are what connection is all about.
+                </div>
+            `;
+            
+            quizScreen.classList.remove('active');
+            resultsScreen.classList.add('active');
         }
 
         function displayQuestion() {
